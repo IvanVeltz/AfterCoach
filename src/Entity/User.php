@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -37,6 +39,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
+
+    /**
+     * @var Collection<int, Athlete>
+     */
+    #[ORM\OneToMany(targetEntity: Athlete::class, mappedBy: 'coach')]
+    private Collection $athletes;
+
+    public function __construct()
+    {
+        $this->athletes = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -139,6 +152,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Athlete>
+     */
+    public function getAthletes(): Collection
+    {
+        return $this->athletes;
+    }
+
+    public function addAthlete(Athlete $athlete): static
+    {
+        if (!$this->athletes->contains($athlete)) {
+            $this->athletes->add($athlete);
+            $athlete->setCoach($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAthlete(Athlete $athlete): static
+    {
+        if ($this->athletes->removeElement($athlete)) {
+            // set the owning side to null (unless already changed)
+            if ($athlete->getCoach() === $this) {
+                $athlete->setCoach(null);
+            }
+        }
 
         return $this;
     }
