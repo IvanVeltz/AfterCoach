@@ -27,12 +27,12 @@ class TrainingSessionProcessor implements ProcessorInterface
 
         $athlete = $data->getAthlete();
 
-        if ($athlete === null) {
+        if ($data->getId() === null && $athlete === null) {
             throw new AccessDeniedHttpException('Athlete is required.');
         }
 
-        if ($athlete->getCoach() !== $user) {
-            throw new AccessDeniedHttpException('You cannot create a session for this athlete.');
+        if ($athlete !== null && $athlete->getCoach() !== $user) {
+            throw new AccessDeniedHttpException('You cannot manage this training session.');
         }
 
         $now = new \DateTimeImmutable();
