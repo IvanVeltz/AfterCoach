@@ -2,11 +2,17 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\TrainingTypeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
+#[ApiResource(
+    normalizationContext: ['groups' => ['training_type:read']],
+    denormalizationContext: ['groups' => ['training_type:write']]
+)]
 #[ORM\Entity(repositoryClass: TrainingTypeRepository::class)]
 class TrainingType
 {
@@ -16,12 +22,15 @@ class TrainingType
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['training_type:read', 'training_type:write'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 7)]
+    #[Groups(['training_type:read', 'training_type:write'])]
     private ?string $color = null;
 
     #[ORM\Column(length: 50, nullable: true)]
+    #[Groups(['training_type:read', 'training_type:write'])]
     private ?string $icon = null;
 
     /**
