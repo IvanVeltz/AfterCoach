@@ -2,48 +2,70 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\TrainingSessionRepository;
+use App\State\TrainingSessionProcessor;
+use App\State\TrainingSessionProvider;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
+#[ApiResource(
+    provider: TrainingSessionProvider::class,
+    processor: TrainingSessionProcessor::class,
+    normalizationContext: ['groups' => ['training_session:read']],
+    denormalizationContext: ['groups' => ['training_session:write']],
+    security: "is_granted('ROLE_COACH')"
+)]
 #[ORM\Entity(repositoryClass: TrainingSessionRepository::class)]
 class TrainingSession
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['training_session:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 150)]
+    #[Groups(['training_session:read', 'training_session:write'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['training_session:read', 'training_session:write'])]
     private ?string $description = null;
 
     #[ORM\Column]
+    #[Groups(['training_session:read', 'training_session:write'])]
     private ?\DateTimeImmutable $scheduledDate = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['training_session:read', 'training_session:write'])]
     private ?float $plannedDistance = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['training_session:read', 'training_session:write'])]
     private ?int $plannedDuration = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['training_session:read', 'training_session:write'])]
     private ?string $coachComment = null;
 
     #[ORM\Column]
+    #[Groups(['training_session:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column]
+    #[Groups(['training_session:read'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'trainingSessions')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['training_session:read', 'training_session:write'])]
     private ?Athlete $athlete = null;
 
     #[ORM\ManyToOne(inversedBy: 'trainingSessions')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['training_session:read', 'training_session:write'])]
     private ?TrainingType $type = null;
 
     public function getId(): ?int
