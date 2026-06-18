@@ -12,7 +12,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiResource(
     processor: AthleteProcessor::class,
     normalizationContext: ['groups' => ['athlete:read']],
-    denormalizationContext: ['groups' => ['athlete:write']]
+    denormalizationContext: ['groups' => ['athlete:write']],
+    security: "is_granted('ROLE_COACH')"
 )]
 #[ORM\Entity(repositoryClass: AthleteRepository::class)]
 class Athlete
