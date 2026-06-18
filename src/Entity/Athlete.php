@@ -7,40 +7,56 @@ use App\State\AthleteProcessor;
 use ApiPlatform\Metadata\ApiResource;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ApiResource(processor: AthleteProcessor::class)]
+#[ApiResource(
+    processor: AthleteProcessor::class,
+    normalizationContext: ['groups' => ['athlete:read']],
+    denormalizationContext: ['groups' => ['athlete:write']]
+)]
 #[ORM\Entity(repositoryClass: AthleteRepository::class)]
 class Athlete
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['athlete:read'])]
     private ?int $id = null;
 
+    #[Groups(['athlete:read', 'athlete:write'])]
     #[ORM\Column(length: 255)]
     private ?string $firstname = null;
 
+    #[Groups(['athlete:read', 'athlete:write'])]
     #[ORM\Column(length: 255)]
     private ?string $lastname = null;
 
+    #[Groups(['athlete:read', 'athlete:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $email = null;
 
+    #[Groups(['athlete:read', 'athlete:write'])]
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private ?\DateTimeImmutable $dateOfBirth = null;
 
+    #[Groups(['athlete:read', 'athlete:write'])]
     #[ORM\Column(length: 20)]
     private ?string $gender = null;
 
+    #[Groups(['athlete:read', 'athlete:write'])]
     #[ORM\Column(nullable: true)]
     private ?float $weight = null;
 
+    #[Groups(['athlete:read', 'athlete:write'])]
     #[ORM\Column(nullable: true)]
     private ?int $height = null;
 
+        
+    #[Groups(['athlete:read', 'athlete:write'])]
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $phone = null;
 
+    #[Groups(['athlete:read', 'athlete:write'])]
     #[ORM\Column]
     private ?bool $isActive = null;
 
