@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\AthleteRepository;
 use App\State\AthleteProcessor;
 use ApiPlatform\Metadata\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -70,6 +72,17 @@ class Athlete
     #[ORM\ManyToOne(inversedBy: 'athletes')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $coach = null;
+
+    /**
+     * @var Collection<int, TrainingSession>
+     */
+    #[ORM\OneToMany(targetEntity: TrainingSession::class, mappedBy: 'athlete', orphanRemoval: true)]
+    private Collection $trainingSessions;
+
+    public function __construct()
+    {
+        $this->trainingSessions = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -216,6 +229,36 @@ class Athlete
     public function setCoach(?User $coach): static
     {
         $this->coach = $coach;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TrainingSession>
+     */
+    public function getTrainingSessions(): Collection
+    {
+        return $this->trainingSessions;
+    }
+
+    public function addTrainingSession(TrainingSession $trainingSession): static
+    {
+        if (!$this->trainingSessions->contains($trainingSession)) {
+            $this->trainingSessions->add($trainingSession);
+            $trainingSession->setAthlete($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTrainingSession(TrainingSession $trainingSession): static
+    {
+        if ($this->trainingSessions->removeElement($trainingSession)) {
+            // set the owning side to null (unless already changed)
+            if ($trainingSession->getAthlete() === $this) {
+                $trainingSession->setAthlete(null);
+            }
+        }
 
         return $this;
     }
