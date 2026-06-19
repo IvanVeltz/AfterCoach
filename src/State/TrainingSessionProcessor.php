@@ -3,6 +3,7 @@
 namespace App\State;
 
 use ApiPlatform\Metadata\Operation;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\State\ProcessorInterface;
 use App\Entity\TrainingSession;
 use Doctrine\ORM\EntityManagerInterface;
@@ -33,6 +34,13 @@ class TrainingSessionProcessor implements ProcessorInterface
 
         if ($athlete !== null && $athlete->getCoach() !== $user) {
             throw new AccessDeniedHttpException('You cannot manage this training session.');
+        }
+
+        if ($operation instanceof Delete) {
+            $this->entityManager->remove($data);
+            $this->entityManager->flush();
+
+            return $data;
         }
 
         $now = new \DateTimeImmutable();

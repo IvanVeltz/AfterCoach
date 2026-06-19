@@ -4,6 +4,7 @@ namespace App\State;
 
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\State\ProviderInterface;
@@ -33,7 +34,7 @@ class TrainingSessionProvider implements ProviderInterface
                 ->getResult();
         }
 
-        if ($operation instanceof Get || $operation instanceof Patch) {
+        if ($operation instanceof Get || $operation instanceof Patch || $operation instanceof Delete) {
             $id = $uriVariables['id'] ?? null;
 
             $trainingSession = $this->trainingSessionRepository
