@@ -40,6 +40,10 @@ class AthleteProcessor implements ProcessorInterface
             return $data;
         }
 
+        if ($data->getId() !== null && $data->getCoach() !== $user) {
+            throw new AccessDeniedHttpException('You cannot update this athlete.');
+        }
+
         if ($data->getId() === null) {
             $data->setCoach($user);
             $data->setCreatedAt($now);
