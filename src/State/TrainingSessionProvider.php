@@ -34,7 +34,7 @@ class TrainingSessionProvider implements ProviderInterface
                 ->getResult();
         }
 
-        if ($operation instanceof Get || $operation instanceof Patch || $operation instanceof Delete) {
+        if (isset($uriVariables['id'])) {
             $id = $uriVariables['id'] ?? null;
 
             $trainingSession = $this->trainingSessionRepository
