@@ -68,6 +68,9 @@ class TrainingSession
     #[Groups(['training_session:read', 'training_session:write'])]
     private ?TrainingType $type = null;
 
+    #[ORM\OneToOne(mappedBy: 'trainingSession', cascade: ['persist'])]
+    private ?CompletedSession $completedSession = null; 
+
     public function getId(): ?int
     {
         return $this->id;
@@ -114,7 +117,7 @@ class TrainingSession
         return $this->plannedDistance;
     }
 
-    public function setPlannedDistance(float $plannedDistance): static
+    public function setPlannedDistance(?float $plannedDistance): static
     {
         $this->plannedDistance = $plannedDistance;
 
@@ -189,6 +192,22 @@ class TrainingSession
     public function setType(?TrainingType $type): static
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    public function getCompletedSession(): ?CompletedSession
+    {
+        return $this->completedSession;
+    }
+
+    public function setCompletedSession(CompletedSession $completedSession): static
+    {
+        if ($completedSession->getTrainingSession() !== $this) {
+            $completedSession->setTrainingSession($this);
+        }
+
+        $this->completedSession = $completedSession;
 
         return $this;
     }
