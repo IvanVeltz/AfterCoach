@@ -6,6 +6,8 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\TrainingSessionRepository;
 use App\State\TrainingSessionProcessor;
 use App\State\TrainingSessionProvider;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -69,7 +71,22 @@ class TrainingSession
     private ?TrainingType $type = null;
 
     #[ORM\OneToOne(mappedBy: 'trainingSession', cascade: ['persist'])]
-    private ?CompletedSession $completedSession = null; 
+    private ?CompletedSession $completedSession = null;
+
+    /**
+     * @var Collection<int, TrainingExercise>
+     */
+    #[ORM\OneToMany(
+        targetEntity: TrainingExercise::class,
+        mappedBy: 'trainingSession',
+        orphanRemoval: true
+    )]
+    private Collection $trainingExercises;
+
+    public function __construct()
+    {
+        $this->trainingExercises = new ArrayCollection();
+    } 
 
     public function getId(): ?int
     {
@@ -208,6 +225,36 @@ class TrainingSession
         }
 
         $this->completedSession = $completedSession;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TrainingExercise>
+     */
+    public function getTrainingExercises(): Collection
+    {
+        return $this->trainingExercises;
+    }
+
+    public function addTrainingExercise(TrainingExercise $trainingExercise): static
+    {
+        if (!$this->trainingExercises->contains($trainingExercise)) {
+            $this->trainingExercises->add($trainingExercise);
+            $trainingExercise->setTrainingSession($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTrainingExercise(TrainingExercise $trainingExercise): static
+    {
+        if ($this->trainingExercises->removeElement($trainingExercise)) {
+            // set the owning side to null (unless already changed)
+            if ($trainingExercise->getTrainingSession() === $this) {
+                $trainingExercise->setTrainingSession(null);
+            }
+        }
 
         return $this;
     }
