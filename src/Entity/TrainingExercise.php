@@ -6,48 +6,68 @@ use App\Repository\TrainingExerciseRepository;
 use App\Enum\ExerciseType;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiResource;
+use Symfony\Component\Serializer\Attribute\Groups;
 
+#[ApiResource(
+    normalizationContext: ['groups' => ['training_exercise:read']],
+    denormalizationContext: ['groups' => ['training_exercise:write']],
+    security: "is_granted('ROLE_COACH')"
+)]
 #[ORM\Entity(repositoryClass: TrainingExerciseRepository::class)]
 class TrainingExercise
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['training_exercise:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 150)]
+    #[Groups(['training_exercise:read', 'training_exercise:write'])]
     private ?string $title = null;
 
+    #[Groups(['training_exercise:read', 'training_exercise:write'])]
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
+    #[Groups(['training_exercise:read', 'training_exercise:write'])]
     #[ORM\Column(enumType: ExerciseType::class)]
     private ?ExerciseType $exerciseType = null;
 
+    #[Groups(['training_exercise:read', 'training_exercise:write'])]
     #[ORM\Column]
     private ?int $position = null;
 
+    #[Groups(['training_exercise:read', 'training_exercise:write'])]
     #[ORM\Column(nullable: true)]
     private ?int $duration = null;
 
+    #[Groups(['training_exercise:read', 'training_exercise:write'])]
     #[ORM\Column(nullable: true)]
     private ?float $distance = null;
 
+    #[Groups(['training_exercise:read', 'training_exercise:write'])]
     #[ORM\Column(nullable: true)]
     private ?int $repetitions = null;
 
+    #[Groups(['training_exercise:read', 'training_exercise:write'])]
     #[ORM\Column(nullable: true)]
     private ?int $targetPaceSeconds = null;
 
+    #[Groups(['training_exercise:read', 'training_exercise:write'])]
     #[ORM\Column(nullable: true)]
     private ?int $recoveryDuration = null;
 
+    #[Groups(['training_exercise:read'])]
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
+    #[Groups(['training_exercise:read'])]
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
-    
+
+    #[Groups(['training_exercise:read', 'training_exercise:write'])]
     #[ORM\ManyToOne(inversedBy: 'trainingExercises')]
     #[ORM\JoinColumn(nullable: false)]
     private ?TrainingSession $trainingSession = null;
